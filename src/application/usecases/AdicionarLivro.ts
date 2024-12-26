@@ -1,13 +1,5 @@
-interface Livro {
-  titulo: string;
-  autor: string;
-  isbn: string;
-  ano: number;
-}
-
-interface RepositorioDeLivros {
-  salvar(livro: Livro): void;
-}
+import { RepositorioDeLivros } from "../../infrastructure/RepositorioDeLivros";
+import { Livro } from "../../domain/Livro";
 
 export class AdicionarLivro {
   private repositorio: RepositorioDeLivros;
