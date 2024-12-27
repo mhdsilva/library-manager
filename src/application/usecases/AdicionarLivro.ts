@@ -1,5 +1,12 @@
-import { RepositorioDeLivros } from "../../infrastructure/RepositorioDeLivros";
 import { Livro } from "../../domain/Livro";
+import { RepositorioDeLivros } from "../ports/RepositorioDeLivros";
+
+interface DadosLivro {
+  titulo: string;
+  autor: string;
+  isbn: string;
+  ano: number;
+}
 
 export class AdicionarLivro {
   private repositorio: RepositorioDeLivros;
@@ -8,8 +15,13 @@ export class AdicionarLivro {
     this.repositorio = repositorio;
   }
 
-  executar(livro: Livro): void {
-    if (!livro.titulo) throw new Error("Título é obrigatório");
-    this.repositorio.salvar(livro);
+  public async executar(dados: DadosLivro): Promise<void> {
+    const novoLivro = new Livro(
+      dados.titulo,
+      dados.autor,
+      dados.isbn,
+      dados.ano
+    );
+    await this.repositorio.salvar(novoLivro);
   }
 }
