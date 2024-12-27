@@ -1,4 +1,4 @@
-import { RepositorioDeLivros } from "../../infrastructure/RepositorioDeLivros";
+import { RepositorioDeLivros } from "../ports/RepositorioDeLivros";
 import { Livro } from "../../domain/Livro";
 
 export class ListarLivros {
@@ -8,7 +8,7 @@ export class ListarLivros {
     this.repositorio = repositorio;
   }
 
-  executar(): Livro[] {
+  public async executar(): Promise<Livro[]> {
     return this.repositorio.listar();
   }
 }

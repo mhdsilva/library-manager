@@ -1,11 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
 import { AdicionarLivro } from "../application/usecases/AdicionarLivro";
-import { RepositorioDeLivros } from "../infrastructure/RepositorioDeLivros";
+import { RepositorioDeLivros } from "../application/ports/RepositorioDeLivros";
 
-describe("AdicionarLivro", () => {
-  it("deve adicionar um livro válido", () => {
-    const repositorio = new RepositorioDeLivros();
-    const casoDeUso = new AdicionarLivro(repositorio);
+describe("AdicionarLivro (Unit)", () => {
+  it("deve adicionar um livro válido", async () => {
+    const repositorioMock: RepositorioDeLivros = {
+      salvar: vi.fn().mockResolvedValue(undefined),
+      listar: vi.fn().mockResolvedValue([]),
+    };
+
+    const casoDeUso = new AdicionarLivro(repositorioMock);
 
     const livro = {
       titulo: "Clean Code",
@@ -14,14 +18,24 @@ describe("AdicionarLivro", () => {
       ano: 2008,
     };
 
-    casoDeUso.executar(livro);
+    await casoDeUso.executar(livro);
 
-    expect(repositorio.salvar).toHaveBeenCalledWith(livro);
+    expect(repositorioMock.salvar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        titulo: "Clean Code",
+        autor: "Robert C. Martin",
+        isbn: "9780132350884",
+        ano: 2008,
+      })
+    );
   });
 
-  it("deve lançar um erro ao tentar adicionar um livro sem título", () => {
-    const repositorio = new RepositorioDeLivros();
-    const casoDeUso = new AdicionarLivro(repositorio);
+  it("deve lançar um erro ao tentar adicionar um livro sem título", async () => {
+    const repositorioMock: RepositorioDeLivros = {
+      salvar: vi.fn().mockResolvedValue(undefined),
+      listar: vi.fn().mockResolvedValue([]),
+    };
+    const casoDeUso = new AdicionarLivro(repositorioMock);
 
     const livroInvalido = {
       titulo: "",
@@ -30,7 +44,7 @@ describe("AdicionarLivro", () => {
       ano: 2023,
     };
 
-    expect(() => casoDeUso.executar(livroInvalido)).toThrow(
+    await expect(casoDeUso.executar(livroInvalido)).rejects.toThrow(
       "Título é obrigatório"
     );
   });
