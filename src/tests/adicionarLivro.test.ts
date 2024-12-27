@@ -7,6 +7,8 @@ describe("AdicionarLivro (Unit)", () => {
     const repositorioMock: RepositorioDeLivros = {
       salvar: vi.fn().mockResolvedValue(undefined),
       listar: vi.fn().mockResolvedValue([]),
+      buscarPorISBN: vi.fn().mockResolvedValue(null),
+      buscarPorTitulo: vi.fn().mockResolvedValue(null),
     };
 
     const casoDeUso = new AdicionarLivro(repositorioMock);
@@ -34,6 +36,8 @@ describe("AdicionarLivro (Unit)", () => {
     const repositorioMock: RepositorioDeLivros = {
       salvar: vi.fn().mockResolvedValue(undefined),
       listar: vi.fn().mockResolvedValue([]),
+      buscarPorISBN: vi.fn().mockResolvedValue(null),
+      buscarPorTitulo: vi.fn().mockResolvedValue(null),
     };
     const casoDeUso = new AdicionarLivro(repositorioMock);
 

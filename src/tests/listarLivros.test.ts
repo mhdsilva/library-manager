@@ -13,6 +13,8 @@ describe("ListarLivros - Teste de Unidade", () => {
           new Livro("Livro 1", "Autor 1", "123", 2020),
           new Livro("Livro 2", "Autor 2", "456", 2021),
         ]),
+      buscarPorISBN: vi.fn(),
+      buscarPorTitulo: vi.fn(),
     };
 
     const casoDeUso = new ListarLivros(repositorioMock);
