@@ -38,4 +38,23 @@ export class RepositorioDeLivrosPrisma implements RepositorioDeLivros {
       );
     });
   }
+
+  public async buscarPorISBN(isbn: string): Promise<Livro | null> {
+    const livroDB = await this.prisma.book.findUnique({
+      where: { isbn },
+    });
+    if (!livroDB) return null;
+    return new Livro(livroDB.titulo, livroDB.autor, livroDB.isbn, livroDB.ano);
+  }
+
+  public async buscarPorTitulo(parteTitulo: string): Promise<Livro[]> {
+    const livrosDB = await this.prisma.book.findMany({
+      where: {
+        titulo: {
+          contains: parteTitulo,
+        },
+      },
+    });
+    return livrosDB.map((l) => new Livro(l.titulo, l.autor, l.isbn, l.ano));
+  }
 }
