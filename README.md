@@ -23,8 +23,8 @@ Uma API de gerenciamento de biblioteca desenvolvida com Express.js, Prisma e Typ
 
 1. Clone o repositório:
 
-````git clone https://github.com/seu-usuario/library-manager.git
-cd library-manager```
+`````git clone https://github.com/seu-usuario/library-manager.git
+cd library-manager````
 
 2. Inicie o container:
 
@@ -138,4 +138,4 @@ A API utiliza JWT para autenticação. Para acessar rotas protegidas:
     └── express.d.ts ```
 
 
-````
+`````
