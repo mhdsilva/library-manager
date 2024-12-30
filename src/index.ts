@@ -2,6 +2,7 @@ import express, { Request, Response, RequestHandler } from "express";
 import { AdicionarLivro } from "./application/usecases/AdicionarLivro";
 import { ListarLivros } from "./application/usecases/ListarLivros";
 import { BuscarLivroPorISBN } from "./application/usecases/BuscarLivroPorISBN";
+import { BuscarLivroPorTitulo } from "./application/usecases/BuscarLivroPorTitulo";
 import { RepositorioDeLivrosPrisma } from "./infrastructure/RepositorioDeLivrosPrisma";
 
 const app = express();
@@ -36,6 +37,13 @@ const adicionarLivroHandler: RequestHandler<{}, {}, AddLivroRequest> = async (
 
 const listarLivrosHandler: RequestHandler = async (req, res) => {
   try {
+    const { q } = req.query;
+    if (q) {
+      const casoDeUso = new BuscarLivroPorTitulo(repositorio);
+      const livros = await casoDeUso.executar(q as string);
+      res.status(200).send(livros);
+      return;
+    }
     const casoDeUso = new ListarLivros(repositorio);
     const livros = await casoDeUso.executar();
     res.status(200).send(livros);

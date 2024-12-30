@@ -55,6 +55,7 @@ export class RepositorioDeLivrosPrisma implements RepositorioDeLivros {
         },
       },
     });
+
     return livrosDB.map((l) => new Livro(l.titulo, l.autor, l.isbn, l.ano));
   }
 }
