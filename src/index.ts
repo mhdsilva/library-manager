@@ -3,12 +3,16 @@ import { AdicionarLivro } from "./application/usecases/AdicionarLivro";
 import { ListarLivros } from "./application/usecases/ListarLivros";
 import { BuscarLivroPorISBN } from "./application/usecases/BuscarLivroPorISBN";
 import { BuscarLivroPorTitulo } from "./application/usecases/BuscarLivroPorTitulo";
+import { AutenticarUsuario } from "./application/usecases/AutenticarUsuario";
 import { RepositorioDeLivrosPrisma } from "./infrastructure/RepositorioDeLivrosPrisma";
+import { RepositorioDeUsuariosPrisma } from "./infrastructure/RepositorioDeUsuariosPrisma";
+import { authMiddleware } from "../src/infrastructure/middleware/authMiddleware";
 
 const app = express();
 app.use(express.json());
 
-const repositorio = new RepositorioDeLivrosPrisma();
+const repositorioLivros = new RepositorioDeLivrosPrisma();
+const repositorioUsuarios = new RepositorioDeUsuariosPrisma();
 
 interface AddLivroRequest {
   titulo: string;
@@ -17,9 +21,16 @@ interface AddLivroRequest {
   ano: number;
 }
 
-interface IsbnParams {
-  isbn: string;
-}
+const loginHandler: RequestHandler = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const casoDeUso = new AutenticarUsuario(repositorioUsuarios);
+    const token = await casoDeUso.executar(email, password);
+    res.status(200).send({ token });
+  } catch (error) {
+    res.status(400).send({ error: (error as Error).message });
+  }
+};
 
 const adicionarLivroHandler: RequestHandler<{}, {}, AddLivroRequest> = async (
   req,
@@ -27,7 +38,7 @@ const adicionarLivroHandler: RequestHandler<{}, {}, AddLivroRequest> = async (
 ) => {
   try {
     const { titulo, autor, isbn, ano } = req.body;
-    const casoDeUso = new AdicionarLivro(repositorio);
+    const casoDeUso = new AdicionarLivro(repositorioLivros);
     await casoDeUso.executar({ titulo, autor, isbn, ano });
     res.status(201).send({ message: "Livro adicionado com sucesso!" });
   } catch (error) {
@@ -39,12 +50,12 @@ const listarLivrosHandler: RequestHandler = async (req, res) => {
   try {
     const { q } = req.query;
     if (q) {
-      const casoDeUso = new BuscarLivroPorTitulo(repositorio);
+      const casoDeUso = new BuscarLivroPorTitulo(repositorioLivros);
       const livros = await casoDeUso.executar(q as string);
       res.status(200).send(livros);
       return;
     }
-    const casoDeUso = new ListarLivros(repositorio);
+    const casoDeUso = new ListarLivros(repositorioLivros);
     const livros = await casoDeUso.executar();
     res.status(200).send(livros);
   } catch (error) {
@@ -52,13 +63,13 @@ const listarLivrosHandler: RequestHandler = async (req, res) => {
   }
 };
 
-const buscarLivroPorIsbnHandler: RequestHandler<IsbnParams> = async (
+const buscarLivroPorIsbnHandler: RequestHandler<{ isbn: string }> = async (
   req,
   res
 ) => {
   try {
     const { isbn } = req.params;
-    const casoDeUso = new BuscarLivroPorISBN(repositorio);
+    const casoDeUso = new BuscarLivroPorISBN(repositorioLivros);
     const livro = await casoDeUso.executar(isbn);
     if (!livro) {
       res.status(404).send({ message: "Livro não encontrado" });
@@ -70,9 +81,14 @@ const buscarLivroPorIsbnHandler: RequestHandler<IsbnParams> = async (
   }
 };
 
-app.post("/livros", adicionarLivroHandler);
-app.get("/livros", listarLivrosHandler);
-app.get("/livros/:isbn", buscarLivroPorIsbnHandler);
+app.post("/login", loginHandler);
+app.post("/livros", authMiddleware(["admin"]), adicionarLivroHandler);
+app.get("/livros", authMiddleware(["admin", "reader"]), listarLivrosHandler);
+app.get(
+  "/livros/:isbn",
+  authMiddleware(["admin", "reader"]),
+  buscarLivroPorIsbnHandler
+);
 
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");
