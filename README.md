@@ -23,7 +23,8 @@ Uma API de gerenciamento de biblioteca desenvolvida com Express.js, Prisma e Typ
 
 1. Clone o repositório:
 
-```git clone https://github.com/seu-usuario/library-manager.git
+```
+git clone https://github.com/seu-usuario/library-manager.git
 cd library-manager
 ```
 
@@ -39,7 +40,8 @@ cd library-manager
 
 2. Configure o banco de dados:
 
-```npx prisma generate
+```
+npx prisma generate
 npx prisma migrate dev
 ```
 
