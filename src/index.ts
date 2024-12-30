@@ -4,6 +4,7 @@ import { ListarLivros } from "./application/usecases/ListarLivros";
 import { BuscarLivroPorISBN } from "./application/usecases/BuscarLivroPorISBN";
 import { BuscarLivroPorTitulo } from "./application/usecases/BuscarLivroPorTitulo";
 import { AutenticarUsuario } from "./application/usecases/AutenticarUsuario";
+import { CriarUsuario } from "./application/usecases/CriarUsuario";
 import { RepositorioDeLivrosPrisma } from "./infrastructure/RepositorioDeLivrosPrisma";
 import { RepositorioDeUsuariosPrisma } from "./infrastructure/RepositorioDeUsuariosPrisma";
 import { authMiddleware } from "../src/infrastructure/middleware/authMiddleware";
@@ -27,6 +28,17 @@ const loginHandler: RequestHandler = async (req, res) => {
     const casoDeUso = new AutenticarUsuario(repositorioUsuarios);
     const token = await casoDeUso.executar(email, password);
     res.status(200).send({ token });
+  } catch (error) {
+    res.status(400).send({ error: (error as Error).message });
+  }
+};
+
+const adicionarUsuarioHandler: RequestHandler = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+    const casoDeUso = new CriarUsuario(repositorioUsuarios);
+    await casoDeUso.executar({ email, password, role });
+    res.status(201).send({ message: "Usuário criado com sucesso!" });
   } catch (error) {
     res.status(400).send({ error: (error as Error).message });
   }
@@ -82,6 +94,7 @@ const buscarLivroPorIsbnHandler: RequestHandler<{ isbn: string }> = async (
 };
 
 app.post("/login", loginHandler);
+app.post("/usuarios", adicionarUsuarioHandler);
 app.post("/livros", authMiddleware(["admin"]), adicionarLivroHandler);
 app.get("/livros", authMiddleware(["admin", "reader"]), listarLivrosHandler);
 app.get(
