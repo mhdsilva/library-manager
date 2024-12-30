@@ -23,8 +23,9 @@ Uma API de gerenciamento de biblioteca desenvolvida com Express.js, Prisma e Typ
 
 1. Clone o repositório:
 
-`````git clone https://github.com/seu-usuario/library-manager.git
-cd library-manager````
+```git clone https://github.com/seu-usuario/library-manager.git
+cd library-manager
+```
 
 2. Inicie o container:
 
@@ -39,65 +40,68 @@ cd library-manager````
 2. Configure o banco de dados:
 
 ```npx prisma generate
-npx prisma migrate dev```
+npx prisma migrate dev
+```
 
 3. Inicie o servidor:
 
 `npm run dev`
-
 
 ## Rotas da API
 
 ### Autenticação e Usuários
 
 **POST /login**
+
 - Autentica um usuário
 
 ```json
-    {
-        "email": "usuario@email.com",
-        "password": "senha123"
-    }
+{
+  "email": "usuario@email.com",
+  "password": "senha123"
+}
 ```
 
-
 **POST /usuarios**
+
 - Cria um novo usuário
 
 ```json
-    {
-        "email": "usuario@email.com",
-        "password": "senha123",
-        "role": "admin"
-    }
+{
+  "email": "usuario@email.com",
+  "password": "senha123",
+  "role": "admin"
+}
 ```
-
 
 ### Livros
 
 **POST /livros** (requer autenticação de admin)
+
 - Adiciona um novo livro
 
 ```json
-    {
-        "titulo": "O Senhor dos Anéis",
-        "autor": "J.R.R. Tolkien",
-        "isbn": "9788533613379",
-        "ano": 1954
-    }
+{
+  "titulo": "O Senhor dos Anéis",
+  "autor": "J.R.R. Tolkien",
+  "isbn": "9788533613379",
+  "ano": 1954
+}
 ```
 
-
 **GET /livros** (requer autenticação)
+
 - Lista todos os livros
 - Suporta busca por título: `/livros?q=senhor`
 
 **GET /livros/:isbn** (requer autenticação)
+
 - Busca um livro específico pelo ISBN
 
 ## Autenticação
 
 A API utiliza JWT para autenticação. Para acessar rotas protegidas:
+
 1. Faça login para obter o token
 2. Inclua o token no header: `Authorization: Bearer {seu-token}`
 
@@ -135,7 +139,5 @@ A API utiliza JWT para autenticação. Para acessar rotas protegidas:
 │   ├── buscarLivroPorISBN.unit.test.ts
 │   └── listarLivros.unit.test.ts
 └── types
-    └── express.d.ts ```
-
-
-`````
+    └── express.d.ts
+```
